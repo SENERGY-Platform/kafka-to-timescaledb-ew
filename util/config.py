@@ -45,7 +45,10 @@ class KafkaFilterClientConfig(sevm.Config):
 
 class TimescaleDBConfig(sevm.Config):
     host = None
+    port = None
+    username = None
     password = None
+    database = None
 
 
 class WatchdogConfig(sevm.Config):
