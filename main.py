@@ -67,7 +67,8 @@ if __name__ == '__main__':
         data_client=data_client,
         filter_client=filter_client,
         get_data_timeout=config.get_data_timeout,
-        get_data_limit=config.get_data_limit
+        get_data_limit=config.get_data_limit,
+        batch_threshold=config.batch_threshold
     )
     filter_client.set_on_sync(callable=export_worker.set_filter_sync, sync_delay=config.kafka_filter_client.sync_delay)
     watchdog = cncr_wdg.Watchdog(
