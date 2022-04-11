@@ -71,6 +71,8 @@ if __name__ == '__main__':
         batch_threshold=config.batch_threshold
     )
     filter_client.set_on_sync(callable=export_worker.set_filter_sync, sync_delay=config.kafka_filter_client.sync_delay)
+    filter_client.set_on_put(callable=export_worker.create_table)
+    filter_client.set_on_delete(callable=export_worker.drop_table)
     watchdog = cncr_wdg.Watchdog(
         monitor_callables=[export_worker.is_alive, filter_client.is_alive, data_client.is_alive],
         shutdown_callables=[export_worker.stop, data_client.stop, filter_client.stop],
