@@ -60,6 +60,7 @@ class Config(sevm.Config):
     logger_level = "warning"
     get_data_timeout = 5.0
     get_data_limit = 1000
+    batch_threshold = 100
     kafka = KafkaConfig
     kafka_data_client = KafkaDataClientConfig
     kafka_data_consumer = KafkaDataConsumerConfig
