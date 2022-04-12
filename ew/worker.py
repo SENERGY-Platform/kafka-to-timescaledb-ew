@@ -62,12 +62,12 @@ class ExportWorker:
                             time_format=export_args.get(ExportArgs.time_format)
                         )
                         if table_name not in batches:
-                            batches[table_name] = [(row_cols, [row_data])]
+                            batches[table_name] = [(export_id, row_cols, [row_data])]
                         else:
-                            if row_cols != batches[table_name][-1][0]:
-                                batches[table_name].append((row_cols, [row_data]))
+                            if row_cols != batches[table_name][-1][1]:
+                                batches[table_name].append((export_id, row_cols, [row_data]))
                             else:
-                                batches[table_name][-1][1].append(row_data)
+                                batches[table_name][-1][2].append(row_data)
                     except Exception as ex:
                         util.logger.error(f"{ExportWorker.__log_err_msg_prefix}: generating row failed: reason={get_exception_str(ex)} export_id={export_id}")
         return batches
@@ -78,12 +78,21 @@ class ExportWorker:
             for i in rows_batch.values():
                 for b in i:
                     rows_total += len(b) - 1
-            util.logger.debug(f"{ExportWorker.__log_msg_prefix}: writing rows batch: rows_total={rows_total}")
-        for table_name, batch in rows_batch.items():
-            for rows in batch:
-                query = gen_insert_into_table_query(name=table_name, columns=rows[0])
-                with self.__db_conn.cursor() as cursor:
-                    psycopg2.extras.execute_values(cur=cursor, sql=query, argslist=rows[1], page_size=self.__page_size)
+            util.logger.debug(f"{ExportWorker.__log_msg_prefix}: writing rows: row_count={rows_total}")
+        with self.__db_conn.cursor() as cursor:
+            for table_name, batches in rows_batch.items():
+                for batch in batches:
+                    try:
+                        psycopg2.extras.execute_values(
+                            cur=cursor,
+                            sql=gen_insert_into_table_query(name=table_name, columns=batch[1]),
+                            argslist=batch[2],
+                            page_size=self.__page_size
+                        )
+                    except (psycopg2.InterfaceError, psycopg2.OperationalError, psycopg2.InternalError) as ex:
+                        raise WriteRowsError(len(batch[1]), batch[0], ex)
+                    except Exception as ex:
+                        util.logger.error(f"{ExportWorker.__log_err_msg_prefix}: {WriteRowsError(len(batch[1]), batch[0], ex)}")
         self.__db_conn.commit()
 
     def set_filter_sync(self, err: bool):
@@ -114,9 +123,9 @@ class ExportWorker:
                         if exports_batch[0]:
                             self._write_rows(rows_batch=self._gen_rows_batch(exports_batch=exports_batch[0]))
                             self.__data_client.store_offsets()
-                # except WriteRowsError as ex:
-                #     util.logger.critical(f"{ExportWorker.__log_err_msg_prefix}: {ex}")
-                #     self.__stop = True
+                except WriteRowsError as ex:
+                    util.logger.critical(f"{ExportWorker.__log_err_msg_prefix}: {ex}")
+                    self.__stop = True
                 except Exception as ex:
                     util.logger.critical(f"{ExportWorker.__log_err_msg_prefix}: consuming exports failed: reason={get_exception_str(ex)}")
                     self.__stop = True
