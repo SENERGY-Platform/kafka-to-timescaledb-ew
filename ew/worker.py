@@ -33,14 +33,14 @@ class ExportWorker:
     __log_msg_prefix = "export worker"
     __log_err_msg_prefix = f"{__log_msg_prefix} error"
 
-    def __init__(self, db_conn: psycopg2._psycopg.connection, data_client: ew_lib.DataClient, filter_client: ew_lib.FilterClient, get_data_timeout: float = 5.0, get_data_limit: int = 10000, batch_threshold: int = 100):
+    def __init__(self, db_conn: psycopg2._psycopg.connection, data_client: ew_lib.DataClient, filter_client: ew_lib.FilterClient, get_data_timeout: float = 5.0, get_data_limit: int = 10000, page_size: int = 100):
         self.__db_conn = db_conn
         self.__data_client = data_client
         self.__filter_client = filter_client
         self.__filter_sync_event = threading.Event()
         self.__get_data_timeout = get_data_timeout
         self.__get_data_limit = get_data_limit
-        self.__batch_threshold = batch_threshold
+        self.__page_size = page_size
         self.__filter_sync_err = False
         self.__stop = False
         self.__stopped = False
