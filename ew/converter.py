@@ -36,19 +36,19 @@ def to_str(val, *args):
 time_fmt = "%Y-%m-%d %H:%M:%S.%f"
 
 
-def to_timestamp(val, fmt: str):
+def to_datetime(val, fmt: str):
     if fmt:
         if fmt == "unix":
             time_obj = datetime.datetime.fromtimestamp(val)
         else:
             time_obj = datetime.datetime.strptime(val, fmt)
-        return time_obj.strftime(time_fmt)
     else:
-        return val
+        time_obj = datetime.datetime.utcnow()
+    return time_obj
 
 
 type_map = {
-    "TIMESTAMP": to_timestamp,
+    "TIMESTAMP": to_datetime,
     "bool": to_bool,
     "real": to_float,
     "double": to_float,
