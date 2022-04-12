@@ -49,6 +49,8 @@ class TimescaleDBConfig(sevm.Config):
     username = None
     password = None
     database = None
+    distributed_hypertables = False
+    hypertable_replication_factor = 2
 
 
 class WatchdogConfig(sevm.Config):
