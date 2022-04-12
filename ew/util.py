@@ -25,6 +25,11 @@ def get_exception_str(ex):
     return "[" + ", ".join([item.strip().replace("\n", " ") for item in traceback.format_exception_only(type(ex), ex)]) + "]"
 
 
+class WriteRowsError(Exception):
+    def __init__(self, row_count, export_id, ex):
+        super().__init__(f"writing rows failed: reason={get_exception_str(ex)} row_count={row_count} export_id={export_id}")
+
+
 class ValidateFilterError(Exception):
     def __init__(self, ex):
         super().__init__(get_exception_str(ex))
