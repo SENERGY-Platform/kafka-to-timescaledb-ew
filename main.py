@@ -28,7 +28,8 @@ if __name__ == '__main__':
     config = util.Config(prefix="conf")
     util.init_logger(config.logger_level)
     util.logger.debug(f"export worker config: {config}")
-    db_conn = psycopg2.connect(f"postgres://{config.timescaledb.username}:{config.timescaledb.password}@{config.timescaledb.host}:{config.timescaledb.port}/{config.timescaledb.database}")
+    db_conn_ew = psycopg2.connect(f"postgres://{config.timescaledb.username}:{config.timescaledb.password}@{config.timescaledb.host}:{config.timescaledb.port}/{config.timescaledb.database}")
+    db_conn_tm = psycopg2.connect(f"postgres://{config.timescaledb.username}:{config.timescaledb.password}@{config.timescaledb.host}:{config.timescaledb.port}/{config.timescaledb.database}")
     kafka_filter_consumer_config = {
         "metadata.broker.list": config.kafka.metadata_broker_list,
         "group.id": f"{config.kafka_filter_consumer_group_id}_{config.kafka.consumer_group_id_postfix}",
@@ -63,20 +64,24 @@ if __name__ == '__main__':
         logger=util.logger
     )
     export_worker = ew.ExportWorker(
-        db_conn=db_conn,
+        db_conn=db_conn_ew,
         data_client=data_client,
         filter_client=filter_client,
         get_data_timeout=config.get_data_timeout,
         get_data_limit=config.get_data_limit,
         batch_threshold=config.batch_threshold
     )
+    table_manager = ew.TableManager(
+        db_conn=db_conn_tm,
+        filter_client=filter_client
+    )
     filter_client.set_on_sync(callable=export_worker.set_filter_sync, sync_delay=config.kafka_filter_client.sync_delay)
-    filter_client.set_on_put(callable=export_worker.create_table)
-    filter_client.set_on_delete(callable=export_worker.drop_table)
+    filter_client.set_on_put(callable=table_manager.create_table)
+    filter_client.set_on_delete(callable=table_manager.drop_table)
     watchdog = cncr_wdg.Watchdog(
         monitor_callables=[export_worker.is_alive, filter_client.is_alive, data_client.is_alive],
         shutdown_callables=[export_worker.stop, data_client.stop, filter_client.stop],
-        join_callables=[data_client.join, filter_client.join, db_conn.close, kafka_data_consumer.close, kafka_filter_consumer.close],
+        join_callables=[data_client.join, filter_client.join, db_conn_ew.close, db_conn_tm.close, kafka_data_consumer.close, kafka_filter_consumer.close],
         shutdown_signals=[signal.SIGTERM, signal.SIGINT, signal.SIGABRT],
         monitor_delay=config.watchdog.monitor_delay,
         logger=util.logger

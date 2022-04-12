@@ -41,7 +41,6 @@ class ExportWorker:
         self.__get_data_timeout = get_data_timeout
         self.__get_data_limit = get_data_limit
         self.__batch_threshold = batch_threshold
-        self.__cursor = None
         self.__filter_sync_err = False
         self.__stop = False
         self.__stopped = False
@@ -75,17 +74,14 @@ class ExportWorker:
         return batches
 
     def _insert_rows(self, table_name, columns, rows):
-        if not self.__cursor or self.__cursor.closed:
-            self.__cursor = self.__db_conn.cursor()
         query = gen_insert_into_table_query(name=table_name, columns=columns)
-        for row in rows:
-            self.__cursor.execute(query=query, vars=row)
-        self.__db_conn.commit()
+        with self.__db_conn.cursor() as cursor:
+            for row in rows:
+                cursor.execute(query=query, vars=row)
 
     def _copy_rows(self, table_name, columns, rows):
         cm = pgcopy.CopyManager(conn=self.__db_conn, table=table_name, cols=columns)
         cm.copy(rows, io.BytesIO)
-        self.__db_conn.commit()
 
     def _write_rows_batch(self, rows_batch: typing.Dict):
         if util.logger.level == logging.DEBUG:
@@ -100,27 +96,7 @@ class ExportWorker:
                     self._copy_rows(table_name=table_name, columns=rows[0], rows=rows[1])
                 else:
                     self._insert_rows(table_name=table_name, columns=rows[0], rows=rows[1])
-
-    def _execute_callback_query(self, query: str):
-        cursor = self.__db_conn.cursor()
-        cursor.execute(query=query)
         self.__db_conn.commit()
-        cursor.close()
-
-    def create_table(self, export_id):
-        export_args = self.__filter_client.handler.get_filter_args(id=export_id)
-        self._execute_callback_query(
-            query=gen_create_table_query(
-                name=export_args[ExportArgs.table_name],
-                columns=export_args[ExportArgs.table_columns]
-            )
-        )
-
-    def drop_table(self, export_id):
-        export_args = self.__filter_client.handler.get_filter_args(id=export_id)
-        self._execute_callback_query(
-            query=gen_drop_table_query(name=export_args[ExportArgs.table_name])
-        )
 
     def set_filter_sync(self, err: bool):
         self.__filter_sync_err = err
