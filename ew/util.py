@@ -56,7 +56,7 @@ def gen_create_table_query(name: str, columns: typing.List):
 
 
 def gen_insert_into_table_query(name, columns):
-    return f"INSERT INTO {name} ({', '.join(columns)}) VALUES ({'%s, ' * (len(columns) - 1)}%s);"
+    return f"INSERT INTO {name} ({', '.join(columns)}) VALUES %s"
 
 
 def gen_drop_table_query(name: str):
