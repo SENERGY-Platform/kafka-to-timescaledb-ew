@@ -25,8 +25,7 @@ import threading
 import typing
 import logging
 import psycopg2
-import pgcopy
-import io
+import psycopg2.extras
 
 
 class ExportWorker:
@@ -73,17 +72,7 @@ class ExportWorker:
                         util.logger.error(f"{ExportWorker.__log_err_msg_prefix}: generating row failed: reason={get_exception_str(ex)} export_id={export_id}")
         return batches
 
-    def _insert_rows(self, table_name, columns, rows):
-        query = gen_insert_into_table_query(name=table_name, columns=columns)
-        with self.__db_conn.cursor() as cursor:
-            for row in rows:
-                cursor.execute(query=query, vars=row)
-
-    def _copy_rows(self, table_name, columns, rows):
-        cm = pgcopy.CopyManager(conn=self.__db_conn, table=table_name, cols=columns)
-        cm.copy(rows, io.BytesIO)
-
-    def _write_rows_batch(self, rows_batch: typing.Dict):
+    def _write_rows(self, rows_batch: typing.Dict):
         if util.logger.level == logging.DEBUG:
             rows_total = 0
             for i in rows_batch.values():
@@ -92,10 +81,9 @@ class ExportWorker:
             util.logger.debug(f"{ExportWorker.__log_msg_prefix}: writing rows batch: rows_total={rows_total}")
         for table_name, batch in rows_batch.items():
             for rows in batch:
-                if len(rows[1]) >= self.__batch_threshold:
-                    self._copy_rows(table_name=table_name, columns=rows[0], rows=rows[1])
-                else:
-                    self._insert_rows(table_name=table_name, columns=rows[0], rows=rows[1])
+                query = gen_insert_into_table_query(name=table_name, columns=rows[0])
+                with self.__db_conn.cursor() as cursor:
+                    psycopg2.extras.execute_values(cur=cursor, sql=query, argslist=rows[1], page_size=self.__page_size)
         self.__db_conn.commit()
 
     def set_filter_sync(self, err: bool):
@@ -124,7 +112,7 @@ class ExportWorker:
                         if exports_batch[1]:
                             raise RuntimeError(set(str(ex) for ex in exports_batch[1]))
                         if exports_batch[0]:
-                            self._write_rows_batch(rows_batch=self._gen_rows_batch(exports_batch=exports_batch[0]))
+                            self._write_rows(rows_batch=self._gen_rows_batch(exports_batch=exports_batch[0]))
                             self.__data_client.store_offsets()
                 # except WriteRowsError as ex:
                 #     util.logger.critical(f"{ExportWorker.__log_err_msg_prefix}: {ex}")
