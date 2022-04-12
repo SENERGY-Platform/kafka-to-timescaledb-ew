@@ -69,7 +69,7 @@ if __name__ == '__main__':
         filter_client=filter_client,
         get_data_timeout=config.get_data_timeout,
         get_data_limit=config.get_data_limit,
-        batch_threshold=config.batch_threshold
+        page_size=config.page_size
     )
     table_manager = ew.TableManager(
         db_conn=db_conn_tm,
