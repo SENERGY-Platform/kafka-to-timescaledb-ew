@@ -101,24 +101,26 @@ class ExportWorker:
                 else:
                     self._insert_rows(table_name=table_name, columns=rows[0], rows=rows[1])
 
-    def create_table(self, export_id):
-        export_args = self.__filter_client.handler.get_filter_args(id=export_id)
-        query = gen_create_table_query(
-            name=export_args[ExportArgs.table_name],
-            columns=export_args[ExportArgs.table_columns]
-        )
+    def _execute_callback_query(self, query: str):
         cursor = self.__db_conn.cursor()
         cursor.execute(query=query)
         self.__db_conn.commit()
         cursor.close()
 
+    def create_table(self, export_id):
+        export_args = self.__filter_client.handler.get_filter_args(id=export_id)
+        self._execute_callback_query(
+            query=gen_create_table_query(
+                name=export_args[ExportArgs.table_name],
+                columns=export_args[ExportArgs.table_columns]
+            )
+        )
+
     def drop_table(self, export_id):
         export_args = self.__filter_client.handler.get_filter_args(id=export_id)
-        query = gen_drop_table_query(name=export_args[ExportArgs.table_name])
-        cursor = self.__db_conn.cursor()
-        cursor.execute(query=query)
-        self.__db_conn.commit()
-        cursor.close()
+        self._execute_callback_query(
+            query=gen_drop_table_query(name=export_args[ExportArgs.table_name])
+        )
 
     def set_filter_sync(self, err: bool):
         self.__filter_sync_err = err
