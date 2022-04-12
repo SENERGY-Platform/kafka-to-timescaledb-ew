@@ -15,4 +15,5 @@
 """
 
 from .worker import *
+from .table_manager import *
 from .util import validate_filter
