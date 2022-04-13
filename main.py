@@ -96,9 +96,9 @@ if __name__ == '__main__':
     filter_client.set_on_put(callable=table_manager.create_table)
     filter_client.set_on_delete(callable=table_manager.drop_table)
     watchdog = cncr_wdg.Watchdog(
-        monitor_callables=[export_worker.is_alive, filter_client.is_alive, data_client.is_alive],
-        shutdown_callables=[export_worker.stop, data_client.stop, filter_client.stop],
-        join_callables=[data_client.join, filter_client.join, db_conn_ew.close, db_conn_tm.close, kafka_data_consumer.close, kafka_filter_consumer.close],
+        monitor_callables=[export_worker.is_alive, filter_client.is_alive, data_client.is_alive, table_manager.is_alive],
+        shutdown_callables=[export_worker.stop, data_client.stop, filter_client.stop, table_manager.stop],
+        join_callables=[data_client.join, filter_client.join, table_manager.join, db_conn_ew.close, db_conn_tm.close, kafka_data_consumer.close, kafka_filter_consumer.close],
         shutdown_signals=[signal.SIGTERM, signal.SIGINT, signal.SIGABRT],
         monitor_delay=config.watchdog.monitor_delay,
         logger=util.logger
