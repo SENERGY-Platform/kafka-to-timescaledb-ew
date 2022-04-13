@@ -104,6 +104,7 @@ if __name__ == '__main__':
         logger=util.logger
     )
     watchdog.start(delay=config.watchdog.start_delay)
+    table_manager.start()
     filter_client.start()
     data_client.start()
     export_worker.run()
