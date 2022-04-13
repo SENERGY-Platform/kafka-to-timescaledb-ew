@@ -35,6 +35,21 @@ class ValidateFilterError(Exception):
         super().__init__(get_exception_str(ex))
 
 
+class TableManagerError(Exception):
+    def __init__(self, action, export_id, ex):
+        super().__init__(f"{action} table failed: reason={get_exception_str(ex)} export_id={export_id}")
+
+
+class CreateTableError(TableManagerError):
+    def __init__(self, export_id, ex):
+        super().__init__('create', export_id, ex)
+
+
+class DropTableError(TableManagerError):
+    def __init__(self, export_id, ex):
+        super().__init__('drop', export_id, ex)
+
+
 def validate_filter(filter: dict):
     try:
         cols = [i[0] for i in filter["args"][ExportArgs.table_columns]]
