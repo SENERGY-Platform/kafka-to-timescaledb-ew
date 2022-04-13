@@ -18,4 +18,5 @@
 class ExportArgs:
     table_name = "table_name"
     table_columns = "table_columns"
+    time_column = "time_column"
     time_format = "time_format"

@@ -45,6 +45,8 @@ def validate_filter(filter: dict):
         for i in filter["args"][ExportArgs.table_columns]:
             if i[1] not in type_map:
                 return False
+        if not filter["args"][ExportArgs.time_column] in cols:
+            return False
         return True
     except Exception as ex:
         print(ex)
@@ -66,6 +68,14 @@ def gen_insert_into_table_query(name, columns):
 
 def gen_drop_table_query(name: str):
     return f"DROP TABLE IF EXISTS {name}"
+
+
+def gen_create_hypertable_query(name: str, time_column):
+    return f"SELECT create_hypertable('{name}', '{time_column}');"
+
+
+def gen_set_replication_factor_query(name: str, factor: int):
+    return f"SELECT set_replication_factor('{name}', {factor});"
 
 
 def gen_row(data, columns: typing.List, time_format):
