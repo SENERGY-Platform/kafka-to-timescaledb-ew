@@ -23,9 +23,11 @@ import psycopg2
 
 
 class TableManager:
-    def __init__(self, db_conn: psycopg2._psycopg.connection, filter_client: ew_lib.FilterClient):
+    def __init__(self, db_conn: psycopg2._psycopg.connection, filter_client: ew_lib.FilterClient, distributed_hypertables: bool = False, hypertable_replication_factor: int = 2):
         self.__db_conn = db_conn
         self.__filter_client = filter_client
+        self.__distributed_hypertables = distributed_hypertables
+        self.__hypertable_replication_factor = hypertable_replication_factor
 
     def _execute_query(self, query: str):
         with self.__db_conn.cursor() as cursor:
@@ -34,12 +36,20 @@ class TableManager:
 
     def create_table(self, export_id):
         export_args = self.__filter_client.handler.get_filter_args(id=export_id)
-        self._execute_query(
-            query=gen_create_table_query(
-                name=export_args[ExportArgs.table_name],
-                columns=export_args[ExportArgs.table_columns]
-            )
+        query = gen_create_table_query(
+            name=export_args[ExportArgs.table_name],
+            columns=export_args[ExportArgs.table_columns]
         )
+        if self.__distributed_hypertables:
+            query += gen_create_hypertable_query(
+                name=export_args[ExportArgs.table_name],
+                time_column=export_args[ExportArgs.time_column]
+            )
+            query += gen_set_replication_factor_query(
+                name=export_args[ExportArgs.table_name],
+                factor=self.__hypertable_replication_factor
+            )
+        self._execute_query(query=query)
 
     def drop_table(self, export_id):
         export_args = self.__filter_client.handler.get_filter_args(id=export_id)
