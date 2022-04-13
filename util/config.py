@@ -53,6 +53,12 @@ class TimescaleDBConfig(sevm.Config):
     hypertable_replication_factor = 2
 
 
+class TableManagerConfig(sevm.Config):
+    timeout = 1
+    retries = 2
+    retry_delay = 2
+
+
 class WatchdogConfig(sevm.Config):
     monitor_delay = 2
     start_delay = 5
@@ -70,3 +76,4 @@ class Config(sevm.Config):
     kafka_filter_consumer_group_id = None
     watchdog = WatchdogConfig
     timescaledb = TimescaleDBConfig
+    table_manager = TableManagerConfig
