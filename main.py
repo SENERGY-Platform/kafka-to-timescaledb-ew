@@ -28,8 +28,20 @@ if __name__ == '__main__':
     config = util.Config(prefix="conf")
     util.init_logger(config.logger_level)
     util.logger.debug(f"export worker config: {config}")
-    db_conn_ew = psycopg2.connect(f"postgres://{config.timescaledb.username}:{config.timescaledb.password}@{config.timescaledb.host}:{config.timescaledb.port}/{config.timescaledb.database}")
-    db_conn_tm = psycopg2.connect(f"postgres://{config.timescaledb.username}:{config.timescaledb.password}@{config.timescaledb.host}:{config.timescaledb.port}/{config.timescaledb.database}")
+    db_conn_ew = psycopg2.connect(
+        host=config.timescaledb.host,
+        port=config.timescaledb.port,
+        database=config.timescaledb.database,
+        user=config.timescaledb.username,
+        password=config.timescaledb.password
+    )
+    db_conn_tm = psycopg2.connect(
+        host=config.timescaledb.host,
+        port=config.timescaledb.port,
+        database=config.timescaledb.database,
+        user=config.timescaledb.username,
+        password=config.timescaledb.password
+    )
     kafka_filter_consumer_config = {
         "metadata.broker.list": config.kafka.metadata_broker_list,
         "group.id": f"{config.kafka_filter_consumer_group_id}_{config.kafka.consumer_group_id_postfix}",
