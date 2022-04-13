@@ -29,7 +29,7 @@ class TableManager:
         self.__distributed_hypertables = distributed_hypertables
         self.__hypertable_replication_factor = hypertable_replication_factor
 
-    def _execute_query(self, query: str):
+    def _execute_stmt(self, query: str):
         with self.__db_conn.cursor() as cursor:
             cursor.execute(query=query)
         self.__db_conn.commit()
@@ -49,10 +49,10 @@ class TableManager:
                 name=export_args[ExportArgs.table_name],
                 factor=self.__hypertable_replication_factor
             )
-        self._execute_query(query=query)
+        self._execute_stmt(query=query)
 
     def drop_table(self, export_id):
         export_args = self.__filter_client.handler.get_filter_args(id=export_id)
-        self._execute_query(
+        self._execute_stmt(
             query=gen_drop_table_stmt(name=export_args[ExportArgs.table_name])
         )
