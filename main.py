@@ -87,7 +87,10 @@ if __name__ == '__main__':
         db_conn=db_conn_tm,
         filter_client=filter_client,
         distributed_hypertables=config.timescaledb.distributed_hypertables,
-        hypertable_replication_factor=config.timescaledb.hypertable_replication_factor
+        hypertable_replication_factor=config.timescaledb.hypertable_replication_factor,
+        timeout=config.table_manager.timeout,
+        retries=config.table_manager.retries,
+        retry_delay=config.table_manager.retry_delay,
     )
     filter_client.set_on_sync(callable=export_worker.set_filter_sync, sync_delay=config.kafka_filter_client.sync_delay)
     filter_client.set_on_put(callable=table_manager.create_table)
