@@ -58,23 +58,23 @@ def get_short_id(value: str):
     return base64.urlsafe_b64encode(bytes.fromhex(value)).rstrip(b"=").decode()
 
 
-def gen_create_table_query(name: str, columns: typing.List):
+def gen_create_table_stmt(name: str, columns: typing.List):
     return "CREATE TABLE IF NOT EXISTS {} ({});".format(name, ", ".join([" ".join(i) for i in columns]))
 
 
-def gen_insert_into_table_query(name, columns):
+def gen_insert_into_table_stmt(name, columns):
     return f"INSERT INTO {name} ({', '.join(columns)}) VALUES %s"
 
 
-def gen_drop_table_query(name: str):
+def gen_drop_table_stmt(name: str):
     return f"DROP TABLE IF EXISTS {name}"
 
 
-def gen_create_hypertable_query(name: str, time_column):
+def gen_create_hypertable_stmt(name: str, time_column):
     return f"SELECT create_hypertable('{name}', '{time_column}');"
 
 
-def gen_set_replication_factor_query(name: str, factor: int):
+def gen_set_replication_factor_stmt(name: str, factor: int):
     return f"SELECT set_replication_factor('{name}', {factor});"
 
 

@@ -85,7 +85,7 @@ class ExportWorker:
                     try:
                         psycopg2.extras.execute_values(
                             cur=cursor,
-                            sql=gen_insert_into_table_query(name=table_name, columns=batch[1]),
+                            sql=gen_insert_into_table_stmt(name=table_name, columns=batch[1]),
                             argslist=batch[2],
                             page_size=self.__page_size
                         )

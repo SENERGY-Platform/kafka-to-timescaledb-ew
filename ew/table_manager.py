@@ -36,16 +36,16 @@ class TableManager:
 
     def create_table(self, export_id):
         export_args = self.__filter_client.handler.get_filter_args(id=export_id)
-        query = gen_create_table_query(
+        query = gen_create_table_stmt(
             name=export_args[ExportArgs.table_name],
             columns=export_args[ExportArgs.table_columns]
         )
         if self.__distributed_hypertables:
-            query += gen_create_hypertable_query(
+            query += gen_create_hypertable_stmt(
                 name=export_args[ExportArgs.table_name],
                 time_column=export_args[ExportArgs.time_column]
             )
-            query += gen_set_replication_factor_query(
+            query += gen_set_replication_factor_stmt(
                 name=export_args[ExportArgs.table_name],
                 factor=self.__hypertable_replication_factor
             )
@@ -54,5 +54,5 @@ class TableManager:
     def drop_table(self, export_id):
         export_args = self.__filter_client.handler.get_filter_args(id=export_id)
         self._execute_query(
-            query=gen_drop_table_query(name=export_args[ExportArgs.table_name])
+            query=gen_drop_table_stmt(name=export_args[ExportArgs.table_name])
         )
