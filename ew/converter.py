@@ -34,13 +34,10 @@ def to_str(val, *args):
 
 
 def to_datetime(val, fmt: str):
-    if fmt:
-        if fmt == "unix":
-            time_obj = datetime.datetime.fromtimestamp(val)
-        else:
-            time_obj = datetime.datetime.strptime(val, fmt)
+    if fmt == "unix":
+        time_obj = datetime.datetime.fromtimestamp(val)
     else:
-        time_obj = datetime.datetime.utcnow()
+        time_obj = datetime.datetime.strptime(val, fmt)
     return time_obj
 
 
