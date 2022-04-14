@@ -61,8 +61,10 @@ class TableManager:
             with self.__db_conn.cursor() as cursor:
                 cursor.execute(query=stmt)
             self.__db_conn.commit()
-        except (psycopg2.InterfaceError, psycopg2.OperationalError, psycopg2.InternalError, psycopg2.DatabaseError):
+        except (psycopg2.InterfaceError, psycopg2.OperationalError, psycopg2.InternalError, psycopg2.DatabaseError) as ex:
             if retry < self.__retries:
+                util.logger.warning(f"{TableManager.__log_err_msg_prefix}: executing statement failed: reason={get_exception_str(ex)} statement='{stmt}' retries={self.__retries - retry}")
+                self.__db_conn.reset()
                 self.__sleeper.wait(self.__retry_delay)
                 if not self.__stop:
                     self._execute_stmt(stmt=stmt, retry=retry + 1)
