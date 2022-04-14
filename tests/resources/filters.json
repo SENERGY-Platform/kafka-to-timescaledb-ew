@@ -1,0 +1,156 @@
+[
+  {
+    "method": "put",
+    "payload": {
+      "source": "test",
+      "identifiers": [
+        {
+          "key": "id_a",
+          "value": "a-1"
+        }
+      ],
+      "mappings": {
+        "int_val:data": "val_int",
+        "float_val:data": "val_float",
+        "str_val:data": "val_str",
+        "bool_val:data": "val_bool",
+        "time:data": "timestamp"
+      },
+      "id": "export-1",
+      "args": {
+        "table_name": "tab_1",
+        "table_columns": [
+          ["time", "TIMESTAMP", "NOT NULL"],
+          ["int_val", "bigint", "NULL"],
+          ["float_val", "double", "PRECISION NULL"],
+          ["str_val", "text", "NULL"],
+          ["bool_val", "bool", "NULL"]
+        ],
+        "time_column": "time",
+        "time_format": "%Y-%m-%dT%H:%M:%S.%fZ"
+      }
+    },
+    "timestamp": 1646145513
+  },
+  {
+    "method": "put",
+    "payload": {
+      "source": "test",
+      "identifiers": [
+        {
+          "key": "id_a",
+          "value": "a-1"
+        }
+      ],
+      "mappings": {
+        "val_int:data": "val_float",
+        "val_float:data": "val_int",
+        "val_str:data": "val_str",
+        "val_bool:data": "val_bool",
+        "time:data": "timestamp"
+      },
+      "id": "export-2",
+      "args": {
+        "table_name": "tab_2",
+        "table_columns": [
+          ["time", "TIMESTAMP", "NOT NULL"],
+          ["val_int", "bigint", "NULL"],
+          ["val_float", "double", "PRECISION NULL"],
+          ["val_bool", "bool", "NULL"],
+          ["val_str", "text", "NULL"]
+        ],
+        "time_column": "time",
+        "time_format": "%Y-%m-%dT%H:%M:%S.%fZ"
+      }
+    },
+    "timestamp": 1646145514
+  },
+  {
+    "method": "put",
+    "payload": {
+      "source": "test",
+      "identifiers": [
+        {
+          "key": "id_a",
+          "value": "a-1"
+        }
+      ],
+      "mappings": {
+        "int_val:data": "val_int",
+        "float_val:data": "val_float",
+        "time:data": "timestamp"
+      },
+      "id": "export-3",
+      "args": {
+        "table_name": "tab_3",
+        "table_columns": [
+          ["time", "TIMESTAMP", "NOT NULL"],
+          ["int_val", "bigint", "NULL"],
+          ["float_val", "double", "PRECISION NULL"]
+        ],
+        "time_column": "time",
+        "time_format": "%Y-%m-%dT%H:%M:%S.%fZ"
+      }
+    },
+    "timestamp": 1646145515
+  },
+  {
+    "method": "put",
+    "payload": {
+      "source": "test",
+      "identifiers": [
+        {
+          "key": "id_a",
+          "value": "a-1"
+        }
+      ],
+      "mappings": {
+        "int_val:data": "val_int",
+        "float_val:data": "val_float",
+        "bool_val:data": "val_bool",
+        "time:data": "timestamp"
+      },
+      "id": "export-4",
+      "args": {
+        "table_name": "tab_4",
+        "table_columns": [
+          ["time", "TIMESTAMP", "NOT NULL"],
+          ["int_val", "bigint", "NULL"],
+          ["float_val", "double", "PRECISION NULL"],
+          ["str_val", "text", "NULL"],
+          ["bool_val", "bool", "NULL"]
+        ],
+        "time_column": "time",
+        "time_format": "%Y-%m-%dT%H:%M:%S.%fZ"
+      }
+    },
+    "timestamp": 1646145516
+  },
+  {
+    "method": "put",
+    "payload": {
+      "source": "test",
+      "identifiers": [
+        {
+          "key": "id_c",
+          "value": "c-1"
+        }
+      ],
+      "mappings": {
+        "val:data": "val",
+        "time:data": "timestamp"
+      },
+      "id": "export-5",
+      "args": {
+        "table_name": "tab_5",
+        "table_columns": [
+          ["time", "TIMESTAMP", "NOT NULL"],
+          ["val", "bigint", "NULL"]
+        ],
+        "time_column": "time",
+        "time_format": "%A, %d-%b-%y %H:%M:%S UTC"
+      }
+    },
+    "timestamp": 1646145517
+  }
+]

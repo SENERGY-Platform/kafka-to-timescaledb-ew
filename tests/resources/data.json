@@ -1,0 +1,49 @@
+[
+  {
+    "id_a": "a-1",
+    "val_int": 1,
+    "val_float": 1.0,
+    "val_str": "one",
+    "val_bool": true,
+    "timestamp": "2022-02-09T10:01:01.781Z"
+  },
+  {
+    "id_a": "a-1",
+    "val_int": 2,
+    "val_float": 2.0,
+    "val_str": "two",
+    "timestamp": "2022-02-09T10:44:45.079Z"
+  },
+  {
+    "id_b": "b-1",
+    "val": 3,
+    "timestamp": "2022-02-09T10:44:45.186Z"
+  },
+  {
+    "id_a": "a-1",
+    "val_int": 4,
+    "val_float": 4.0,
+    "val_str": "four",
+    "val_bool": false,
+    "timestamp": "2022-02-09T10:44:46.121Z"
+  },
+  {
+    "id_a": "a-1",
+    "val_int": 5,
+    "val_float": 5.0,
+    "val_str": "five",
+    "val_bool": true,
+    "timestamp": "2022-02-09T10:44:46.457Z"
+  },
+  {
+    "id_c": "c-1",
+    "val": 6,
+    "timestamp": "Monday, 07-Mar-22 14:22:07 UTC"
+  },
+  {
+    "id_a": "a-1",
+    "val_float": 7.0,
+    "val_bool": true,
+    "timestamp": "2022-02-09T10:50:34.452Z"
+  }
+]
