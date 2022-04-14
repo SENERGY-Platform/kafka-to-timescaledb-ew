@@ -74,15 +74,15 @@ def get_short_id(value: str):
 
 
 def gen_create_table_stmt(name: str, columns: typing.List):
-    return "CREATE TABLE IF NOT EXISTS {} ({});".format(name, ", ".join([" ".join(i) for i in columns]))
+    return "CREATE TABLE IF NOT EXISTS \"{}\" ({});".format(name, ", ".join(f"\"{i[0]}\" {' '.join(i[1:])}" for i in columns))
 
 
 def gen_insert_into_table_stmt(name, columns):
-    return f"INSERT INTO {name} ({', '.join(columns)}) VALUES %s"
+    return "INSERT INTO \"{}\" ({}) VALUES %s".format(name, ", ".join(f"\"{i}\"" for i in columns))
 
 
 def gen_drop_table_stmt(name: str):
-    return f"DROP TABLE IF EXISTS {name}"
+    return f"DROP TABLE IF EXISTS \"{name}\""
 
 
 def gen_create_hypertable_stmt(name: str, time_column):
