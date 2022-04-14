@@ -28,12 +28,6 @@ with open("tests/resources/data.json") as file:
 with open("tests/resources/filters.json") as file:
     filters: list = json.load(file)
 
-with open("tests/resources/points_batch_results_l2.json") as file:
-    gen_points_batch_results_l2: list = json.load(file)
-
-with open("tests/resources/points_batch_results_l3.json") as file:
-    gen_points_batch_results_l3: list = json.load(file)
-
 
 class TestInfluxDBWorker(unittest.TestCase):
     def _init_export_worker(self, msg_error=False):
