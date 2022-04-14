@@ -61,7 +61,7 @@ class TableManager:
             with self.__db_conn.cursor() as cursor:
                 cursor.execute(query=stmt)
             self.__db_conn.commit()
-        except (psycopg2.InterfaceError, psycopg2.OperationalError, psycopg2.InternalError):
+        except (psycopg2.InterfaceError, psycopg2.OperationalError, psycopg2.InternalError, psycopg2.DatabaseError):
             if retry < self.__retries:
                 self.__sleeper.wait(self.__retry_delay)
                 if not self.__stop:
