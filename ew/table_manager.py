@@ -47,9 +47,9 @@ class TableManager:
     def _run(self):
         while not self.__stop:
             try:
-                func, export_id = self.__queue.get(timeout=self.__timeout)
+                func, args = self.__queue.get(timeout=self.__timeout)
                 try:
-                    func(export_id)
+                    func(**args)
                 except Exception as ex:
                     util.logger.critical(f"{TableManager.__log_err_msg_prefix}: {ex}")
                     self.__stop = True
@@ -91,9 +91,8 @@ class TableManager:
         except Exception as ex:
             raise CreateTableError(export_id, ex)
 
-    def _drop_table(self, export_id):
+    def _drop_table(self, export_id, export_args):
         try:
-            export_args = self.__filter_client.handler.get_filter_args(id=export_id)
             self._execute_stmt(
                 stmt=gen_drop_table_stmt(name=export_args[ExportArgs.table_name])
             )
@@ -103,10 +102,13 @@ class TableManager:
             raise DropTableError(export_id, ex)
 
     def create_table(self, export_id):
-        self.__queue.put((self._create_table, export_id))
+        self.__queue.put((self._create_table, {"export_id": export_id}))
 
     def drop_table(self, export_id):
-        self.__queue.put((self._drop_table, export_id))
+        try:
+            self.__queue.put((self._drop_table, {"export_id": export_id, "export_args": self.__filter_client.handler.get_filter_args(id=export_id)}))
+        except mf_lib.exceptions.UnknownFilterIDError:
+            pass
 
     def start(self):
         self.__thread.start()
