@@ -33,9 +33,6 @@ def to_str(val, *args):
     return str(val)
 
 
-time_fmt = "%Y-%m-%d %H:%M:%S.%f"
-
-
 def to_datetime(val, fmt: str):
     if fmt:
         if fmt == "unix":
