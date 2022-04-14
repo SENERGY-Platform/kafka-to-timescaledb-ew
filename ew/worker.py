@@ -77,7 +77,7 @@ class ExportWorker:
             rows_total = 0
             for i in rows_batch.values():
                 for b in i:
-                    rows_total += len(b) - 1
+                    rows_total += len(b[2])
             util.logger.debug(f"{ExportWorker.__log_msg_prefix}: writing rows: row_count={rows_total}")
         with self.__db_conn.cursor() as cursor:
             for table_name, batches in rows_batch.items():
