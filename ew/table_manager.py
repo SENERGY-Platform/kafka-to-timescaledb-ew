@@ -16,6 +16,8 @@
 
 __all__ = ("TableManager", )
 
+import mf_lib.exceptions
+
 from .util import *
 from .model import *
 import util
@@ -84,6 +86,8 @@ class TableManager:
                     factor=self.__hypertable_replication_factor
                 )
             self._execute_stmt(stmt=stmt)
+        except mf_lib.exceptions.UnknownFilterIDError:
+            pass
         except Exception as ex:
             raise CreateTableError(export_id, ex)
 
@@ -93,6 +97,8 @@ class TableManager:
             self._execute_stmt(
                 stmt=gen_drop_table_stmt(name=export_args[ExportArgs.table_name])
             )
+        except mf_lib.exceptions.UnknownFilterIDError:
+            pass
         except Exception as ex:
             raise DropTableError(export_id, ex)
 
