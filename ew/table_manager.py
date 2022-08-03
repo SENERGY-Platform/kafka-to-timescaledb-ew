@@ -78,16 +78,18 @@ class TableManager:
                 name=export_args[ExportArgs.table_name],
                 columns=export_args[ExportArgs.table_columns]
             )
+            self._execute_stmt(stmt=stmt)
             if self.__distributed_hypertables:
-                stmt += gen_create_hypertable_stmt(
+                stmt = gen_create_hypertable_stmt(
                     name=export_args[ExportArgs.table_name],
                     time_column=export_args[ExportArgs.time_column]
                 )
-                stmt += gen_set_replication_factor_stmt(
+                self._execute_stmt(stmt=stmt)
+                stmt = gen_set_replication_factor_stmt(
                     name=export_args[ExportArgs.table_name],
                     factor=self.__hypertable_replication_factor
                 )
-            self._execute_stmt(stmt=stmt)
+                self._execute_stmt(stmt=stmt)
         except mf_lib.exceptions.UnknownFilterIDError:
             pass
         except Exception as ex:
