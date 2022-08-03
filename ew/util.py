@@ -86,11 +86,11 @@ def gen_drop_table_stmt(name: str):
 
 
 def gen_create_hypertable_stmt(name: str, time_column):
-    return f"SELECT create_hypertable('{name}', '{time_column}');"
+    return f"SELECT create_distributed_hypertable('\"{name}\"', '{time_column}');"
 
 
 def gen_set_replication_factor_stmt(name: str, factor: int):
-    return f"SELECT set_replication_factor('{name}', {factor});"
+    return f"SELECT set_replication_factor('\"{name}\"', {factor});"
 
 
 def gen_row(data, columns: typing.List, time_format):
