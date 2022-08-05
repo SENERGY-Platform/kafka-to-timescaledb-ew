@@ -74,7 +74,7 @@ def get_short_id(value: str):
 
 
 def gen_create_table_stmt(name: str, columns: typing.List):
-    return "CREATE TABLE IF NOT EXISTS \"{}\" ({});".format(name, ", ".join(f"\"{i[0]}\" {' '.join(i[1:])}" for i in columns))
+    return "CREATE TABLE \"{}\" ({});".format(name, ", ".join(f"\"{i[0]}\" {' '.join(i[1:])}" for i in columns))
 
 
 def gen_insert_into_table_stmt(name, columns):
