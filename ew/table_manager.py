@@ -103,7 +103,8 @@ class TableManager:
     def _drop_table(self, export_id, export_args):
         try:
             self._execute_stmt(
-                stmt=gen_drop_table_stmt(name=export_args[ExportArgs.table_name])
+                stmt=gen_drop_table_stmt(name=export_args[ExportArgs.table_name]),
+                commit=True
             )
         except mf_lib.exceptions.UnknownFilterIDError:
             pass
