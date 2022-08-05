@@ -110,6 +110,9 @@ class TableManager:
         except Exception as ex:
             raise DropTableError(export_id, ex)
 
+    def _table_exists(self, name):
+        return all(self._execute_stmt(gen_select_exists_table_stmt(name))[0])
+
     def create_table(self, export_id):
         self.__queue.put((self._create_table, {"export_id": export_id}))
 
