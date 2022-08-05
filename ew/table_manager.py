@@ -57,6 +57,7 @@ class TableManager:
                 pass
 
     def _execute_stmt(self, stmt: str, commit=False, retry=0):
+        util.logger.debug(f"{TableManager.__log_msg_prefix}: executing statement: statement='{stmt}' retries={self.__retries - retry}")
         try:
             rows = None
             with self.__db_conn.cursor() as cursor:
