@@ -56,18 +56,23 @@ class TableManager:
             except queue.Empty:
                 pass
 
-    def _execute_stmt(self, stmt: str, retry=0):
+    def _execute_stmt(self, stmt: str, commit=False, retry=0):
         try:
+            rows = None
             with self.__db_conn.cursor() as cursor:
                 cursor.execute(query=stmt)
-            self.__db_conn.commit()
+                if cursor.rowcount > 0:
+                    rows = cursor.fetchall()
+            if commit:
+                self.__db_conn.commit()
+            return rows
         except (psycopg2.InterfaceError, psycopg2.OperationalError, psycopg2.InternalError, psycopg2.DatabaseError) as ex:
             if retry < self.__retries:
                 util.logger.warning(f"{TableManager.__log_err_msg_prefix}: executing statement failed: reason={get_exception_str(ex)} statement='{stmt}' retries={self.__retries - retry}")
                 self.__db_conn.reset()
                 self.__sleeper.wait(self.__retry_delay)
                 if not self.__stop:
-                    self._execute_stmt(stmt=stmt, retry=retry + 1)
+                    self._execute_stmt(stmt=stmt, commit=commit, retry=retry + 1)
             else:
                 raise
 
