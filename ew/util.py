@@ -93,5 +93,9 @@ def gen_set_replication_factor_stmt(name: str, factor: int):
     return f"SELECT set_replication_factor('\"{name}\"', {factor});"
 
 
+def gen_select_exists_table_stmt(name: str):
+    return f"SELECT EXISTS (SELECT FROM pg_tables WHERE tablename = \"{name}\");"
+
+
 def gen_row(data, columns: typing.List, time_format):
     return tuple(type_map[i[1]](data[i[0]], time_format) for i in columns if i[0] in data)
