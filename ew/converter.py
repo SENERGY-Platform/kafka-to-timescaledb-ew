@@ -18,10 +18,14 @@ import datetime
 
 
 def to_float(val, *args):
+    if val is None:
+        return val
     return float(val)
 
 
 def to_int(val, *args):
+    if val is None:
+        return val
     return int(val)
 
 
@@ -30,6 +34,8 @@ def to_bool(val, *args):
 
 
 def to_str(val, *args):
+    if val is None:
+        return val
     return str(val)
 
 
