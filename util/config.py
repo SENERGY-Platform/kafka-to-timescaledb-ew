@@ -75,6 +75,7 @@ class Config(sevm.Config):
     kafka_data_consumer = KafkaDataConsumerConfig
     kafka_filter_client = KafkaFilterClientConfig
     kafka_filter_consumer_group_id = None
+    kafka_metrics_producer_client_id = None
     watchdog = WatchdogConfig
     timescaledb = TimescaleDBConfig
     table_manager = TableManagerConfig
