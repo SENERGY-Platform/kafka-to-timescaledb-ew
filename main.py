@@ -83,9 +83,18 @@ if __name__ == '__main__':
         get_data_limit=config.get_data_limit,
         page_size=config.page_size
     )
+    kafka_metrics_producer = None
+    if config.table_manager.metrics:
+        kafka_metrics_producer_config = {
+            "metadata.broker.list": config.kafka.metadata_broker_list,
+            "client.id": f"{config.kafka_metrics_producer_client_id}_{config.kafka.id_postfix}",
+            "auto.offset.reset": "earliest",
+        }
+        kafka_metrics_producer = confluent_kafka.Producer(kafka_filter_consumer_config, logger=util.logger)
     table_manager = ew.TableManager(
         db_conn=db_conn_tm,
         filter_client=filter_client,
+        kafka_producer=kafka_metrics_producer,
         distributed_hypertables=config.timescaledb.distributed_hypertables,
         hypertable_replication_factor=config.timescaledb.hypertable_replication_factor,
         timeout=config.table_manager.timeout,
