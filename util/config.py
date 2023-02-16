@@ -57,6 +57,7 @@ class TableManagerConfig(sevm.Config):
     timeout = 1
     retries = 2
     retry_delay = 2
+    metrics = False
 
 
 class WatchdogConfig(sevm.Config):
