@@ -44,7 +44,7 @@ if __name__ == '__main__':
     )
     kafka_filter_consumer_config = {
         "metadata.broker.list": config.kafka.metadata_broker_list,
-        "group.id": f"{config.kafka_filter_consumer_group_id}_{config.kafka.consumer_group_id_postfix}",
+        "group.id": f"{config.kafka_filter_consumer_group_id}_{config.kafka.id_postfix}",
         "auto.offset.reset": "earliest",
     }
     util.logger.debug(f"kafka filter consumer config: {kafka_filter_consumer_config}")
@@ -60,7 +60,7 @@ if __name__ == '__main__':
     )
     kafka_data_consumer_config = {
         "metadata.broker.list": config.kafka.metadata_broker_list,
-        "group.id": f"{config.kafka_data_consumer.group_id}_{config.kafka.consumer_group_id_postfix}",
+        "group.id": f"{config.kafka_data_consumer.group_id}_{config.kafka.id_postfix}",
         "auto.offset.reset": config.kafka_data_consumer.auto_offset_reset,
         "partition.assignment.strategy": config.kafka_data_consumer.partition_assignment_strategy,
         "enable.auto.offset.store": False
