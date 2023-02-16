@@ -30,6 +30,11 @@ class KafkaDataConsumerConfig(sevm.Config):
     partition_assignment_strategy = "cooperative-sticky"
 
 
+class KafkaMetricsProducerConfig(sevm.Config):
+    client_id = None
+    metrics_topic = None
+
+
 class KafkaDataClientConfig(sevm.Config):
     subscribe_interval = 5
     kafka_msg_err_ignore = 3
@@ -75,7 +80,7 @@ class Config(sevm.Config):
     kafka_data_consumer = KafkaDataConsumerConfig
     kafka_filter_client = KafkaFilterClientConfig
     kafka_filter_consumer_group_id = None
-    kafka_metrics_producer_client_id = None
+    kafka_metrics_producer = KafkaMetricsProducerConfig
     watchdog = WatchdogConfig
     timescaledb = TimescaleDBConfig
     table_manager = TableManagerConfig
