@@ -84,6 +84,8 @@ class TableManager:
         try:
             export_args = self.__filter_client.handler.get_filter_args(id=export_id)
             if not self._table_exists(name=export_args[ExportArgs.table_name]):
+                if self.__kafka_producer:
+                    self._publish_metric("put", [export_args[ExportArgs.table_name]])
                 stmt = gen_create_table_stmt(
                     name=export_args[ExportArgs.table_name],
                     columns=export_args[ExportArgs.table_columns]
