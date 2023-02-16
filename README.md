@@ -17,7 +17,7 @@ services:
       CONF_GET_DATA_LIMIT:
       CONF_PAGE_SIZE:
       CONF_KAFKA_METADATA_BROKER_LIST:
-      CONF_KAFKA_CONSUMER_GROUP_ID_POSTFIX:
+      CONF_KAFKA_ID_POSTFIX:
       CONF_KAFKA_DATA_CLIENT_SUBSCRIBE_INTERVAL:
       CONF_KAFKA_DATA_CLIENT_KAFKA_MSG_ERR_IGNORE:
       CONF_KAFKA_DATA_CONSUMER_GROUP_ID:
@@ -29,6 +29,7 @@ services:
       CONF_KAFKA_FILTER_CLIENT_TIME_FORMAT:
       CONF_KAFKA_FILTER_CLIENT_UTC:
       CONF_KAFKA_FILTER_CONSUMER_GROUP_ID: 'kafka-to-timescaledb-ew-0'
+      CONF_KAFKA_METRICS_PRODUCER_CLIENT_ID: 'kafka-to-timescaledb-ew-0'
       CONF_WATCHDOG_MONITOR_DELAY:
       CONF_WATCHDOG_START_DELAY:
       CONF_TIMESCALEDB_HOST:
@@ -41,6 +42,7 @@ services:
       CONF_TABLE_MANAGER_TIMEOUT:
       CONF_TABLE_MANAGER_RETRIES:
       CONF_TABLE_MANAGER_RETRY_DELAY:
+      CONF_TABLE_MANAGER_METRICS:
 
   kafka-to-influxdb-ew-1:
     image: ghcr.io/senergy-platform/kafka-to-timescaledb-ew:prod
@@ -50,7 +52,7 @@ services:
       CONF_GET_DATA_LIMIT:
       CONF_PAGE_SIZE:
       CONF_KAFKA_METADATA_BROKER_LIST:
-      CONF_KAFKA_CONSUMER_GROUP_ID_POSTFIX:
+      CONF_KAFKA_ID_POSTFIX:
       CONF_KAFKA_DATA_CLIENT_SUBSCRIBE_INTERVAL:
       CONF_KAFKA_DATA_CLIENT_KAFKA_MSG_ERR_IGNORE:
       CONF_KAFKA_DATA_CONSUMER_GROUP_ID:
@@ -62,6 +64,7 @@ services:
       CONF_KAFKA_FILTER_CLIENT_TIME_FORMAT:
       CONF_KAFKA_FILTER_CLIENT_UTC:
       CONF_KAFKA_FILTER_CONSUMER_GROUP_ID: 'kafka-to-timescaledb-ew-1'
+      CONF_KAFKA_METRICS_PRODUCER_CLIENT_ID: 'kafka-to-timescaledb-ew-1'
       CONF_WATCHDOG_MONITOR_DELAY:
       CONF_WATCHDOG_START_DELAY:
       CONF_TIMESCALEDB_HOST:
@@ -74,6 +77,7 @@ services:
       CONF_TABLE_MANAGER_TIMEOUT:
       CONF_TABLE_MANAGER_RETRIES:
       CONF_TABLE_MANAGER_RETRY_DELAY:
+      CONF_TABLE_MANAGER_METRICS:
 ```
 
 ## Kubernetes deployment template
@@ -108,7 +112,7 @@ spec:
               value: 
             - name: CONF_KAFKA_METADATA_BROKER_LIST
               value: 
-            - name: CONF_KAFKA_CONSUMER_GROUP_ID_POSTFIX
+            - name: CONF_KAFKA_ID_POSTFIX
               value: 
             - name: CONF_KAFKA_DATA_CLIENT_SUBSCRIBE_INTERVAL
               value: 
@@ -131,6 +135,10 @@ spec:
             - name: CONF_KAFKA_FILTER_CLIENT_UTC
               value: 
             - name: CONF_KAFKA_FILTER_CONSUMER_GROUP_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: CONF_KAFKA_METRICS_PRODUCER_CLIENT_ID
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
@@ -157,6 +165,8 @@ spec:
             - name: CONF_TABLE_MANAGER_RETRIES
               value: 
             - name: CONF_TABLE_MANAGER_RETRY_DELAY
+              value: 
+            - name: CONF_TABLE_MANAGER_METRICS
               value: 
       restartPolicy: Always
 ```
