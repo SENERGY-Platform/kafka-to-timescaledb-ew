@@ -29,6 +29,7 @@ services:
       CONF_KAFKA_FILTER_CLIENT_TIME_FORMAT:
       CONF_KAFKA_FILTER_CLIENT_UTC:
       CONF_KAFKA_FILTER_CONSUMER_GROUP_ID: 'kafka-to-timescaledb-ew-0'
+      CONF_KAFKA_METRICS_PRODUCER_METRICS_TOPIC:
       CONF_KAFKA_METRICS_PRODUCER_CLIENT_ID: 'kafka-to-timescaledb-ew-0'
       CONF_WATCHDOG_MONITOR_DELAY:
       CONF_WATCHDOG_START_DELAY:
@@ -64,6 +65,7 @@ services:
       CONF_KAFKA_FILTER_CLIENT_TIME_FORMAT:
       CONF_KAFKA_FILTER_CLIENT_UTC:
       CONF_KAFKA_FILTER_CONSUMER_GROUP_ID: 'kafka-to-timescaledb-ew-1'
+      CONF_KAFKA_METRICS_PRODUCER_METRICS_TOPIC:
       CONF_KAFKA_METRICS_PRODUCER_CLIENT_ID: 'kafka-to-timescaledb-ew-1'
       CONF_WATCHDOG_MONITOR_DELAY:
       CONF_WATCHDOG_START_DELAY:
@@ -138,6 +140,8 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
+            - name: CONF_KAFKA_METRICS_PRODUCER_METRICS_TOPIC
+              value: 
             - name: CONF_KAFKA_METRICS_PRODUCER_CLIENT_ID
               valueFrom:
                 fieldRef:
