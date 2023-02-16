@@ -16,8 +16,6 @@
 
 __all__ = ("TableManager", )
 
-import mf_lib.exceptions
-
 from .util import *
 from .model import *
 import util
@@ -25,6 +23,9 @@ import ew_lib
 import psycopg2
 import threading
 import queue
+import confluent_kafka
+import json
+import mf_lib.exceptions
 
 
 class TableManager:
