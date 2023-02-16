@@ -32,9 +32,11 @@ class TableManager:
     __log_msg_prefix = "table manager"
     __log_err_msg_prefix = f"{__log_msg_prefix} error"
 
-    def __init__(self, db_conn: psycopg2._psycopg.connection, filter_client: ew_lib.FilterClient, distributed_hypertables: bool = False, hypertable_replication_factor: int = 2, timeout: int = 1, retries: int = 2, retry_delay: int = 2):
+    def __init__(self, db_conn: psycopg2._psycopg.connection, filter_client: ew_lib.FilterClient, kafka_producer: typing.Optional[confluent_kafka.Producer] = None, metrics_topic: typing.Optional[str] = None, distributed_hypertables: bool = False, hypertable_replication_factor: int = 2, timeout: int = 1, retries: int = 2, retry_delay: int = 2):
         self.__db_conn = db_conn
         self.__filter_client = filter_client
+        self.__kafka_producer = kafka_producer
+        self.__metrics_topic = metrics_topic
         self.__distributed_hypertables = distributed_hypertables
         self.__hypertable_replication_factor = hypertable_replication_factor
         self.__timeout = timeout
