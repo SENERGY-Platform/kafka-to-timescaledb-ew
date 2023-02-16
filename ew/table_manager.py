@@ -119,6 +119,12 @@ class TableManager:
     def _table_exists(self, name):
         return all(self._execute_stmt(gen_select_exists_table_stmt(name))[0])
 
+    def _publish_metric(self, method: str, tables: typing.List[str]):
+        try:
+            self.__kafka_producer.produce(topic=self.__metrics_topic, value=json.dumps({"method": method, "tables": tables}))
+        except Exception as ex:
+            util.logger.warning(f"{TableManager.__log_err_msg_prefix}: publishing metric failed: reason={get_exception_str(ex)} method='{method}' tables='{tables}'")
+
     def create_table(self, export_id):
         self.__queue.put((self._create_table, {"export_id": export_id}))
 
