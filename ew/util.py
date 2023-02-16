@@ -82,7 +82,7 @@ def gen_insert_into_table_stmt(name, columns):
 
 
 def gen_drop_table_stmt(name: str):
-    return f"DROP TABLE IF EXISTS \"{name}\""
+    return f"DROP TABLE IF EXISTS \"{name}\" CASCADE"
 
 
 def gen_create_hypertable_stmt(name: str, time_column):
