@@ -21,7 +21,7 @@ import sevm
 
 class KafkaConfig(sevm.Config):
     metadata_broker_list = None
-    consumer_group_id_postfix = None
+    id_postfix = None
 
 
 class KafkaDataConsumerConfig(sevm.Config):
