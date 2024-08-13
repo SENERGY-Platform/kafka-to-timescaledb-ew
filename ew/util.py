@@ -85,8 +85,11 @@ def gen_drop_table_stmt(name: str):
     return f"DROP TABLE IF EXISTS \"{name}\" CASCADE"
 
 
-def gen_create_hypertable_stmt(name: str, time_column):
-    return f"SELECT create_distributed_hypertable('\"{name}\"', '{time_column}');"
+def gen_create_hypertable_stmt(name: str, time_column, is_distributed: bool):
+    dist = ""
+    if is_distributed:
+        dist = "_distributed"
+    return f"SELECT create{dist}_hypertable('\"{name}\"', '{time_column}');"
 
 
 def gen_set_replication_factor_stmt(name: str, factor: int):

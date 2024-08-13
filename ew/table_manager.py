@@ -87,22 +87,29 @@ class TableManager:
             if not self._table_exists(name=export_args[ExportArgs.table_name]):
                 if self.__kafka_producer:
                     self._publish_metric("put", [export_args[ExportArgs.table_name]])
-                stmt = gen_create_table_stmt(
-                    name=export_args[ExportArgs.table_name],
-                    columns=export_args[ExportArgs.table_columns]
+                self._execute_stmt(
+                    stmt=gen_create_table_stmt(
+                        name=export_args[ExportArgs.table_name],
+                        columns=export_args[ExportArgs.table_columns]
+                    ),
+                    commit=True
                 )
-                self._execute_stmt(stmt=stmt, commit=True)
+                self._execute_stmt(
+                    stmt=gen_create_hypertable_stmt(
+                        name=export_args[ExportArgs.table_name],
+                        time_column=export_args[ExportArgs.time_column],
+                        is_distributed=self.__distributed_hypertables
+                    ),
+                    commit=True
+                )
                 if self.__distributed_hypertables:
-                    stmt = gen_create_hypertable_stmt(
-                        name=export_args[ExportArgs.table_name],
-                        time_column=export_args[ExportArgs.time_column]
+                    self._execute_stmt(
+                        stmt=gen_set_replication_factor_stmt(
+                            name=export_args[ExportArgs.table_name],
+                            factor=self.__hypertable_replication_factor
+                        ),
+                        commit=True
                     )
-                    self._execute_stmt(stmt=stmt, commit=True)
-                    stmt = gen_set_replication_factor_stmt(
-                        name=export_args[ExportArgs.table_name],
-                        factor=self.__hypertable_replication_factor
-                    )
-                    self._execute_stmt(stmt=stmt, commit=True)
         except mf_lib.exceptions.UnknownFilterIDError:
             pass
         except Exception as ex:
