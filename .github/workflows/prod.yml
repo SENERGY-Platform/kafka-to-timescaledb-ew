@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - master
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
   workflow_dispatch:
 
 jobs:
@@ -27,6 +29,12 @@ jobs:
         uses: docker/setup-qemu-action@v1
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
+      - name: Bump version and push tag
+        id: tag_version
+        uses: mathieudutour/github-tag-action@v6.1
+        with:
+          release_branches: ".*"
+          github_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
@@ -36,3 +44,8 @@ jobs:
           push: true
           tags: |
             ghcr.io/senergy-platform/kafka-to-timescaledb-ew:prod
+            smartenergyplatform/kafka-to-timescaledb-ew:prod
+            ghcr.io/senergy-platform/kafka-to-timescaledb-ew:${{ steps.tag_version.outputs.new_tag }}
+            smartenergyplatform/kafka-to-timescaledb-ew:${{ steps.tag_version.outputs.new_tag }}
+            ghcr.io/senergy-platform/kafka-to-timescaledb-ew:latest
+            smartenergyplatform/kafka-to-timescaledb-ew:latest
