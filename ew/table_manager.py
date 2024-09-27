@@ -58,7 +58,8 @@ class TableManager:
                     self.__stop = True
             except queue.Empty:
                 pass
-        self.__kafka_producer.flush()
+        if self.__kafka_producer:
+            self.__kafka_producer.flush()
 
     def _execute_stmt(self, stmt: str, commit=False, retry=0):
         util.logger.debug(f"{TableManager.__log_msg_prefix}: executing statement: statement='{stmt}' retries={self.__retries - retry}")
