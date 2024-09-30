@@ -73,12 +73,15 @@ def get_short_id(value: str):
     return base64.urlsafe_b64encode(bytes.fromhex(value)).rstrip(b"=").decode()
 
 
-def gen_create_table_stmt(name: str, columns: typing.List):
-    return "CREATE TABLE \"{}\" ({});".format(name, ", ".join(f"\"{i[0]}\" {' '.join(i[1:])}" for i in columns))
+def gen_create_table_stmt(name: str, columns: typing.List, unique_col: str):
+    return "CREATE TABLE \"{}\" ({}{});".format(name, ", ".join(f"\"{i[0]}\" {' '.join(i[1:])}" for i in columns), ", UNIQUE ({})".format(unique_col) if unique_col else "")
 
 
-def gen_insert_into_table_stmt(name, columns):
-    return "INSERT INTO \"{}\" ({}) VALUES %s".format(name, ", ".join(f"\"{i}\"" for i in columns))
+def gen_insert_into_table_stmt(name, columns, unique_col: str):
+    stmt = "INSERT INTO \"{}\" ({}) VALUES %s".format(name, ", ".join(f"{i}" for i in columns))
+    if unique_col:
+        stmt += " ON CONFLICT ({}) DO UPDATE SET {}".format(unique_col, ", ".join(f"{i}=EXCLUDED.{i}" for i in columns if i != unique_col))
+    return stmt
 
 
 def gen_drop_table_stmt(name: str):

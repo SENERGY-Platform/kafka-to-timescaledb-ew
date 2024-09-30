@@ -20,3 +20,4 @@ class ExportArgs:
     table_columns = "table_columns"
     time_column = "time_column"
     time_format = "time_format"
+    time_unique = "time_unique"

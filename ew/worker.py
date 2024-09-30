@@ -62,12 +62,16 @@ class ExportWorker:
                             time_format=export_args.get(ExportArgs.time_format)
                         )
                         if table_name not in batches:
-                            batches[table_name] = [(export_id, row_cols, [row_data])]
+                            batches[table_name] = (
+                                export_id,
+                                export_args[ExportArgs.time_column] if export_args.get(ExportArgs.time_unique) is True else None,
+                                [(row_cols, [row_data])]
+                            )
                         else:
-                            if row_cols != batches[table_name][-1][1]:
-                                batches[table_name].append((export_id, row_cols, [row_data]))
+                            if row_cols != batches[table_name][2][-1][0]:
+                                batches[table_name][2].append((row_cols, [row_data]))
                             else:
-                                batches[table_name][-1][2].append(row_data)
+                                batches[table_name][2][-1][1].append(row_data)
                     except Exception as ex:
                         util.logger.error(f"{ExportWorker.__log_err_msg_prefix}: generating row failed: reason={get_exception_str(ex)} export_id={export_id}")
         return batches
@@ -75,24 +79,24 @@ class ExportWorker:
     def _write_rows(self, rows_batch: typing.Dict):
         if util.logger.level == logging.DEBUG:
             rows_total = 0
-            for i in rows_batch.values():
-                for b in i:
-                    rows_total += len(b[2])
+            for v in rows_batch.values():
+                for b in v[2]:
+                    rows_total += len(b[1])
             util.logger.debug(f"{ExportWorker.__log_msg_prefix}: writing rows: row_count={rows_total}")
         with self.__db_conn.cursor() as cursor:
-            for table_name, batches in rows_batch.items():
-                for batch in batches:
+            for table_name, item in rows_batch.items():
+                for batch in item[2]:
                     try:
                         psycopg2.extras.execute_values(
                             cur=cursor,
-                            sql=gen_insert_into_table_stmt(name=table_name, columns=batch[1]),
-                            argslist=batch[2],
+                            sql=gen_insert_into_table_stmt(name=table_name, columns=batch[0], unique_col=item[1]),
+                            argslist=batch[1],
                             page_size=self.__page_size
                         )
                     except (psycopg2.InterfaceError, psycopg2.OperationalError, psycopg2.InternalError) as ex:
-                        raise WriteRowsError(len(batch[1]), batch[0], ex)
+                        raise WriteRowsError(len(batch[1]), item[0], ex)
                     except Exception as ex:
-                        util.logger.error(f"{ExportWorker.__log_err_msg_prefix}: {WriteRowsError(len(batch[1]), batch[0], ex)}")
+                        util.logger.error(f"{ExportWorker.__log_err_msg_prefix}: {WriteRowsError(len(batch[1]), item[0], ex)}")
         self.__db_conn.commit()
 
     def set_filter_sync(self, err: bool):

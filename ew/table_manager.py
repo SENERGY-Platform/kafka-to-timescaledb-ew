@@ -91,7 +91,8 @@ class TableManager:
                 self._execute_stmt(
                     stmt=gen_create_table_stmt(
                         name=export_args[ExportArgs.table_name],
-                        columns=export_args[ExportArgs.table_columns]
+                        columns=export_args[ExportArgs.table_columns],
+                        unique_col=export_args[ExportArgs.time_column] if export_args.get(ExportArgs.time_unique) is True else None,
                     ),
                     commit=True
                 )
