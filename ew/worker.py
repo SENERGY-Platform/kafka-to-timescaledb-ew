@@ -74,6 +74,9 @@ class ExportWorker:
                                 batches[table_name][2][-1][1].append(row_data)
                     except Exception as ex:
                         util.logger.error(f"{ExportWorker.__log_err_msg_prefix}: generating row failed: reason={get_exception_str(ex)} export_id={export_id}")
+        for table_name, item in batches.items():
+            if item[1]:
+                batches[table_name] = (item[0], item[1], remove_duplicates_from_batch(item[1], item[2]))
         return batches
 
     def _write_rows(self, rows_batch: typing.Dict):
@@ -134,3 +137,24 @@ class ExportWorker:
                     util.logger.critical(f"{ExportWorker.__log_err_msg_prefix}: consuming exports failed: reason={get_exception_str(ex)}")
                     self.__stop = True
         self.__stopped = True
+
+
+def remove_duplicates_from_batch(unique_col, data):
+    time_set = set()
+    new_batch = list()
+    for i in range(1, len(data) + 1):
+        row_cols = data[-i][0]
+        row_data = data[-i][1]
+        t_pos = row_cols.index(unique_col)
+        new_row_data = list()
+        for x in range(1, len(row_data) + 1):
+            row_data_item = row_data[-x]
+            timestamp = row_data_item[t_pos]
+            if not timestamp in time_set:
+                new_row_data.append(row_data_item)
+                time_set.add(timestamp)
+        if len(new_row_data) > 0:
+            new_row_data.reverse()
+            new_batch.append((row_cols, new_row_data))
+    new_batch.reverse()
+    return new_batch
