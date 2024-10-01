@@ -152,5 +152,35 @@
       }
     },
     "timestamp": 1646145517
+  },
+  {
+    "method": "put",
+    "payload": {
+      "source": "test",
+      "identifiers": [
+        {
+          "key": "id_d",
+          "value": "d-1"
+        }
+      ],
+      "mappings": {
+        "val_int:data": "int_val",
+        "val_str:data": "str_val",
+        "time:data": "timestamp"
+      },
+      "id": "export-6",
+      "args": {
+        "table_name": "tab_6",
+        "table_columns": [
+          ["time", "TIMESTAMP", "NOT NULL"],
+          ["val_int", "bigint", "NULL"],
+          ["val_str", "text", "NULL"]
+        ],
+        "time_column": "time",
+        "time_format": "%A, %d-%b-%y %H:%M:%S UTC",
+        "time_unique": true
+      }
+    },
+    "timestamp": 1646145517
   }
 ]

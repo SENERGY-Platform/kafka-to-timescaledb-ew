@@ -70,7 +70,7 @@ class TestInfluxDBWorker(unittest.TestCase):
     def test_gen_rows_batch(self):
         export_worker, data_client, mock_kafka_consumer = self._init_export_worker()
         while not mock_kafka_consumer.empty():
-            exports_batch, _ = data_client.get_exports_batch(timeout=0.1, limit=10, data_ignore_missing_keys=True)
+            exports_batch, _ = data_client.get_exports_batch(timeout=0.1, limit=20, data_ignore_missing_keys=True)
             if exports_batch:
                 # export_worker._gen_rows_batch(exports_batch)
                 export_worker._write_rows(rows_batch=export_worker._gen_rows_batch(exports_batch=exports_batch))
