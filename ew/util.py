@@ -78,9 +78,9 @@ def gen_create_table_stmt(name: str, columns: typing.List, unique_col: str):
 
 
 def gen_insert_into_table_stmt(name, columns, unique_col: str):
-    stmt = "INSERT INTO \"{}\" ({}) VALUES %s".format(name, ", ".join(f"{i}" for i in columns))
+    stmt = "INSERT INTO \"{}\" ({}) VALUES %s".format(name, ", ".join(f"\"{i}\"" for i in columns))
     if unique_col:
-        stmt += " ON CONFLICT ({}) DO UPDATE SET {}".format(unique_col, ", ".join(f"{i}=EXCLUDED.{i}" for i in columns if i != unique_col))
+        stmt += " ON CONFLICT (\"{}\") DO UPDATE SET {}".format(unique_col, ", ".join(f"\"{i}\"=EXCLUDED.\"{i}\"" for i in columns if i != unique_col))
     return stmt
 
 
