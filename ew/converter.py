@@ -49,6 +49,7 @@ def to_datetime(val, fmt: str):
 
 type_map = {
     "TIMESTAMP": to_datetime,
+    "TIMESTAMPTZ": to_datetime,
     "bool": to_bool,
     "real": to_float,
     "double": to_float,
