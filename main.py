@@ -24,9 +24,9 @@ import signal
 
 
 if __name__ == '__main__':
-    util.print_init(name="kafka-to-timescaledb-ew", git_info_file="git_commit")
     config = util.Config(prefix="conf")
     util.init_logger(config.logger_level)
+    util.logger.info("starting export worker", util.read_git_commit("git_commit"))
     util.logger.debug("export worker config", {"values": f"{config}"})
     db_conn_ew = psycopg2.connect(
         host=config.timescaledb.host,
