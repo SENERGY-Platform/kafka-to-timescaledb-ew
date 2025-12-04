@@ -29,9 +29,6 @@ import psycopg2.extras
 
 
 class ExportWorker:
-    __log_msg_prefix = "export worker"
-    __log_err_msg_prefix = f"{__log_msg_prefix} error"
-
     def __init__(self, db_conn: psycopg2._psycopg.connection, data_client: ew_lib.DataClient, filter_client: ew_lib.FilterClient, get_data_timeout: float = 5.0, get_data_limit: int = 10000, page_size: int = 100):
         self.__db_conn = db_conn
         self.__data_client = data_client
@@ -48,7 +45,7 @@ class ExportWorker:
         batches = dict()
         for result in exports_batch:
             if result.ex:
-                util.logger.error(f"{ExportWorker.__log_err_msg_prefix}: generating rows failed: reason={get_exception_str(result.ex)} export_ids={result.filter_ids}")
+                util.logger.error("generating rows", {"error": get_exception_str(result.ex), "export_ids": result.filter_ids})
             else:
                 for export_id in result.filter_ids:
                     try:
@@ -73,7 +70,7 @@ class ExportWorker:
                             else:
                                 batches[table_name][2][-1][1].append(row_data)
                     except Exception as ex:
-                        util.logger.error(f"{ExportWorker.__log_err_msg_prefix}: generating row failed: reason={get_exception_str(ex)} export_id={export_id}")
+                        util.logger.error("generating row", {"error": get_exception_str(ex), "export_id": export_id})
         for table_name, item in batches.items():
             if item[1]:
                 batches[table_name] = (item[0], item[1], remove_duplicates_from_batch(item[1], item[2]))
@@ -85,7 +82,7 @@ class ExportWorker:
             for v in rows_batch.values():
                 for b in v[2]:
                     rows_total += len(b[1])
-            util.logger.debug(f"{ExportWorker.__log_msg_prefix}: writing rows: row_count={rows_total}")
+            util.logger.debug("writing rows", {"row_count": rows_total})
         with self.__db_conn.cursor() as cursor:
             for table_name, item in rows_batch.items():
                 for batch in item[2]:
@@ -99,7 +96,7 @@ class ExportWorker:
                     except (psycopg2.InterfaceError, psycopg2.OperationalError, psycopg2.InternalError) as ex:
                         raise WriteRowsError(len(batch[1]), item[0], ex)
                     except Exception as ex:
-                        util.logger.error(f"{ExportWorker.__log_err_msg_prefix}: {WriteRowsError(len(batch[1]), item[0], ex)}")
+                        util.logger.error("writing rows", {"error": get_exception_str(ex), "row_count": len(batch[1]), "export_id": item[0]})
         self.__db_conn.commit()
 
     def set_filter_sync(self, err: bool):
@@ -113,10 +110,10 @@ class ExportWorker:
         return not self.__stopped
 
     def run(self):
-        util.logger.info(f"{ExportWorker.__log_msg_prefix}: waiting for filter synchronisation ...")
+        util.logger.info("waiting for filter synchronisation")
         self.__filter_sync_event.wait()
         if not self.__filter_sync_err:
-            util.logger.info(f"{ExportWorker.__log_msg_prefix}: starting export consumption ...")
+            util.logger.info("starting export consumption")
             while not self.__stop:
                 try:
                     exports_batch = self.__data_client.get_exports_batch(
@@ -131,10 +128,10 @@ class ExportWorker:
                             self._write_rows(rows_batch=self._gen_rows_batch(exports_batch=exports_batch[0]))
                             self.__data_client.store_offsets()
                 except WriteRowsError as ex:
-                    util.logger.critical(f"{ExportWorker.__log_err_msg_prefix}: {ex}")
+                    util.logger.critical(f"handling exports: {ex.msg}", ex.args)
                     self.__stop = True
                 except Exception as ex:
-                    util.logger.critical(f"{ExportWorker.__log_err_msg_prefix}: consuming exports failed: reason={get_exception_str(ex)}")
+                    util.logger.critical("handling exports", {"error": get_exception_str(ex)})
                     self.__stop = True
         self.__stopped = True
 

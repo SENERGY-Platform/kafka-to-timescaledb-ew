@@ -17,6 +17,7 @@
 __all__ = ("logger", "init_logger")
 
 import logging
+import structlog
 
 logging_levels = {
     'info': logging.INFO,
@@ -32,12 +33,12 @@ class LoggerError(Exception):
         super().__init__(f"unknown log level '{arg}'")
 
 
-handler = logging.StreamHandler()
-handler.setFormatter(logging.Formatter(fmt="%(levelname)s: %(message)s"))
+logging.setLoggerClass(structlog.Logger)
 
-logger = logging.getLogger("ew")
+logger: structlog.Logger = logging.getLogger("ew")
 logger.propagate = False
-logger.addHandler(handler)
+logger.addHandler(logging.StreamHandler())
+logger.configure(organization_name='infai', project_name='kafka-to-timescaledb-ew', time_utc=True, logger_name=True)
 
 
 def init_logger(level):

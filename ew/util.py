@@ -27,7 +27,10 @@ def get_exception_str(ex):
 
 class WriteRowsError(Exception):
     def __init__(self, row_count, export_id, ex):
-        super().__init__(f"writing rows failed: reason={get_exception_str(ex)} row_count={row_count} export_id={export_id}")
+        ex_str = get_exception_str(ex)
+        super().__init__(ex_str)
+        self.msg = "writing rows"
+        self.kwargs = {"error": ex_str, "row_count": row_count, "export_id": export_id}
 
 
 class ValidateFilterError(Exception):
@@ -37,7 +40,10 @@ class ValidateFilterError(Exception):
 
 class TableManagerError(Exception):
     def __init__(self, action, export_id, ex):
-        super().__init__(f"{action} table failed: reason={get_exception_str(ex)} export_id={export_id}")
+        ex_str = get_exception_str(ex)
+        super().__init__(ex_str)
+        self.msg = f"{action} table"
+        self.kwargs = {"error": ex_str, "export_id": export_id}
 
 
 class CreateTableError(TableManagerError):

@@ -1,4 +1,5 @@
-git+https://github.com/SENERGY-Platform/export-worker-lib@0.29.4
+git+https://github.com/SENERGY-Platform/export-worker-lib@0.30.1
 git+https://github.com/SENERGY-Platform/concurrency-watchdog.git@0.1.1
 git+https://github.com/y-du/simple-env-var-manager.git@2.3.0
+git+https://github.com/SENERGY-Platform/python-structlog@0.2.1
 psycopg2>=2.9,<3

@@ -27,7 +27,7 @@ if __name__ == '__main__':
     util.print_init(name="kafka-to-timescaledb-ew", git_info_file="git_commit")
     config = util.Config(prefix="conf")
     util.init_logger(config.logger_level)
-    util.logger.debug(f"export worker config: {config}")
+    util.logger.debug("export worker config", {"values": f"{config}"})
     db_conn_ew = psycopg2.connect(
         host=config.timescaledb.host,
         port=config.timescaledb.port,
@@ -47,7 +47,7 @@ if __name__ == '__main__':
         "group.id": f"{config.kafka_filter_consumer_group_id}_{config.kafka.id_postfix}",
         "auto.offset.reset": "earliest",
     }
-    util.logger.debug(f"kafka filter consumer config: {kafka_filter_consumer_config}")
+    util.logger.debug("kafka filter consumer config", {"values": f"{kafka_filter_consumer_config}"})
     kafka_filter_consumer = confluent_kafka.Consumer(kafka_filter_consumer_config, logger=util.logger)
     filter_client = ew_lib.FilterClient(
         kafka_consumer=kafka_filter_consumer,
@@ -65,7 +65,7 @@ if __name__ == '__main__':
         "partition.assignment.strategy": config.kafka_data_consumer.partition_assignment_strategy,
         "enable.auto.offset.store": False
     }
-    util.logger.debug(f"kafka data consumer config: {kafka_data_consumer_config}")
+    util.logger.debug("kafka data consumer config", {"values", f"{kafka_data_consumer_config}"})
     kafka_data_consumer = confluent_kafka.Consumer(kafka_data_consumer_config, logger=util.logger)
     data_client = ew_lib.DataClient(
         kafka_consumer=kafka_data_consumer,

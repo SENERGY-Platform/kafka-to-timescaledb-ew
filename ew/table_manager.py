@@ -27,10 +27,10 @@ import confluent_kafka
 import json
 import mf_lib.exceptions
 
+logger = util.logger.getChild("table_manager")
+logger.propagate = False
 
 class TableManager:
-    __log_msg_prefix = "table manager"
-    __log_err_msg_prefix = f"{__log_msg_prefix} error"
 
     def __init__(self, db_conn: psycopg2._psycopg.connection, filter_client: ew_lib.FilterClient, kafka_producer: typing.Optional[confluent_kafka.Producer] = None, metrics_topic: typing.Optional[str] = None, distributed_hypertables: bool = False, hypertable_replication_factor: int = 2, timeout: int = 1, retries: int = 2, retry_delay: int = 2):
         self.__db_conn = db_conn
@@ -53,8 +53,11 @@ class TableManager:
                 func, args = self.__queue.get(timeout=self.__timeout)
                 try:
                     func(**args)
+                except TableManagerError as ex:
+                    logger.critical(ex.msg, ex.kwargs)
+                    self.__stop = True
                 except Exception as ex:
-                    util.logger.critical(f"{TableManager.__log_err_msg_prefix}: {ex}")
+                    logger.critical(get_exception_str(ex))
                     self.__stop = True
             except queue.Empty:
                 pass
@@ -62,7 +65,7 @@ class TableManager:
             self.__kafka_producer.flush()
 
     def _execute_stmt(self, stmt: str, commit=False, retry=0):
-        util.logger.debug(f"{TableManager.__log_msg_prefix}: executing statement: statement='{stmt}' retries={self.__retries - retry}")
+        logger.debug("executing statement", {"statement": stmt, "retries": self.__retries - retry})
         try:
             rows = None
             with self.__db_conn.cursor() as cursor:
@@ -74,7 +77,7 @@ class TableManager:
             return rows
         except (psycopg2.InterfaceError, psycopg2.OperationalError, psycopg2.InternalError, psycopg2.DatabaseError) as ex:
             if retry < self.__retries:
-                util.logger.warning(f"{TableManager.__log_err_msg_prefix}: executing statement failed: reason={get_exception_str(ex)} statement='{stmt}' retries={self.__retries - retry}")
+                logger.warning("executing statement", {"error": get_exception_str(ex), "statement": stmt, "retries": self.__retries - retry})
                 self.__db_conn.reset()
                 self.__sleeper.wait(self.__retry_delay)
                 if not self.__stop:
@@ -137,7 +140,7 @@ class TableManager:
         try:
             self.__kafka_producer.produce(topic=self.__metrics_topic, value=json.dumps({"method": method, "tables": tables}))
         except Exception as ex:
-            util.logger.warning(f"{TableManager.__log_err_msg_prefix}: publishing metric failed: reason={get_exception_str(ex)} method='{method}' tables='{tables}'")
+            logger.warning("publishing metric", {"error": get_exception_str(ex), "method": method, "tables": tables})
 
     def create_table(self, export_id):
         self.__queue.put((self._create_table, {"export_id": export_id}))
