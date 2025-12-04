@@ -48,7 +48,9 @@ if __name__ == '__main__':
         "auto.offset.reset": "earliest",
     }
     util.logger.debug("kafka filter consumer config", {"values": f"{kafka_filter_consumer_config}"})
-    kafka_filter_consumer = confluent_kafka.Consumer(kafka_filter_consumer_config, logger=util.logger)
+    kafka_filter_consumer_logger = util.logger.getChild("kafka_filter_consumer")
+    kafka_filter_consumer_logger.propagate = False
+    kafka_filter_consumer = confluent_kafka.Consumer(kafka_filter_consumer_config, logger=kafka_filter_consumer_logger)
     filter_client = ew_lib.FilterClient(
         kafka_consumer=kafka_filter_consumer,
         filter_topic=config.kafka_filter_client.filter_topic,
@@ -66,7 +68,9 @@ if __name__ == '__main__':
         "enable.auto.offset.store": False
     }
     util.logger.debug("kafka data consumer config", {"values", f"{kafka_data_consumer_config}"})
-    kafka_data_consumer = confluent_kafka.Consumer(kafka_data_consumer_config, logger=util.logger)
+    kafka_data_consumer_logger = util.logger.getChild("kafka_data_consumer")
+    kafka_data_consumer_logger.propagate = False
+    kafka_data_consumer = confluent_kafka.Consumer(kafka_data_consumer_config, logger=kafka_data_consumer_logger)
     data_client = ew_lib.DataClient(
         kafka_consumer=kafka_data_consumer,
         filter_client=filter_client,
@@ -90,7 +94,9 @@ if __name__ == '__main__':
             "client.id": f"{config.kafka_metrics_producer.client_id}_{config.kafka.id_postfix}",
             "auto.offset.reset": "earliest",
         }
-        kafka_metrics_producer = confluent_kafka.Producer(kafka_filter_consumer_config, logger=util.logger)
+        kafka_metrics_producer_logger = util.logger.getChild("kafka_metrics_producer")
+        kafka_metrics_producer_logger.propagate = False
+        kafka_metrics_producer = confluent_kafka.Producer(kafka_filter_consumer_config, logger=kafka_metrics_producer_logger)
     table_manager = ew.TableManager(
         db_conn=db_conn_tm,
         filter_client=filter_client,
