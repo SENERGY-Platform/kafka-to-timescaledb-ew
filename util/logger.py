@@ -38,7 +38,7 @@ logging.setLoggerClass(structlog.Logger)
 logger: structlog.Logger = logging.getLogger("ew")
 logger.propagate = False
 logger.addHandler(logging.StreamHandler())
-logger.configure(organization_name='infai', project_name='kafka-to-timescaledb-ew', time_utc=True, logger_name=True)
+logger.configure(organization_name='github.com/senergy-platform', project_name='kafka-to-timescaledb-ew', time_utc=True, logger_name=True)
 
 
 def init_logger(level):
