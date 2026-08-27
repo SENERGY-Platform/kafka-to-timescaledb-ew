@@ -3,6 +3,12 @@ kafka-to-timescaledb-ew
 
 Kafka to TimescaleDB export-worker.
 
+## Documentation
+
+Hand-written documentation is in [docs/](docs/):
+
+- [timestamp-parsing.md](docs/timestamp-parsing.md) — how the time value of a message is parsed, why the configured `time_format` is only a hint, and what the format search costs per row
+
 ## Docker compose template
 
 ```yaml
