@@ -109,5 +109,5 @@ def gen_select_exists_table_stmt(name: str):
     return f"SELECT EXISTS (SELECT FROM pg_tables WHERE tablename = '{name}');"
 
 
-def gen_row(data, columns: typing.List, time_format):
-    return tuple(type_map[i[1]](data[i[0]], time_format) for i in columns if i[0] in data)
+def gen_row(data, columns: typing.List, time_format, export_id):
+    return tuple(type_map[i[1]](data[i[0]], time_format, export_id) for i in columns if i[0] in data)

@@ -56,7 +56,8 @@ class ExportWorker:
                         row_data = gen_row(
                             data=result.data,
                             columns=table_columns,
-                            time_format=export_args.get(ExportArgs.time_format)
+                            time_format=export_args.get(ExportArgs.time_format),
+                            export_id=export_id
                         )
                         if table_name not in batches:
                             batches[table_name] = (
